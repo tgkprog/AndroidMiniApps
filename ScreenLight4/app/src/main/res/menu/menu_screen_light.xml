@@ -1,0 +1,35 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools" 
+    tools:context=".ScreenLightActivity">
+    
+    <item android:id="@+id/actionReInitFlash" 
+        android:title="@string/action_flastReinit"
+        android:orderInCategory="100" 
+        app:showAsAction="never" />
+        
+    <item android:id="@+id/actionReInitScreen" 
+        android:title="@string/action_ScreenReinit"
+        android:orderInCategory="101" 
+        app:showAsAction="never" />
+        
+    <item android:id="@+id/actionFlashOff" 
+        android:title="@string/action_flashOff"
+        android:orderInCategory="102" 
+        app:showAsAction="never" />
+        
+    <item android:id="@+id/actionScreenDim" 
+        android:title="@string/action_ScreenDim"
+        android:orderInCategory="103" 
+        app:showAsAction="never" />
+        
+    <item android:id="@+id/actionAbout" 
+        android:title="@string/action_about"
+        android:orderInCategory="104" 
+        app:showAsAction="never" />
+        
+    <item android:id="@+id/actionWebsite" 
+        android:title="@string/action_website"
+        android:orderInCategory="105" 
+        app:showAsAction="never" />
+</menu>

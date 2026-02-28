@@ -1,0 +1,32 @@
+# MANUAL SIGNING REQUIRED
+
+## Issue
+The keystore password "kloi97" doesn't work with alias "sel2in" on tk2.jks or tk.jks
+
+## Required Certificate
+SHA1: 47:4F:4E:FC:22:8A:94:D8:E1:F2:A5:B0:BF:C7:D2:6A:C4:D3:27:53
+Owner: CN=Tushar Kapila, OU=Android, O=sel2in, L=Blr, ST=KA, C=IN
+
+## Steps to Sign
+
+### 1. Find correct keystore and alias
+keytool -list -v -keystore /data/code/gt/tgk/AndroidMiniApps/tk2.jks
+# Enter the correct password when prompted
+# Note down the alias name
+
+### 2. Build unsigned APK (commenting out signing)
+./gradlew assembleRelease
+
+### 3. Sign manually with correct credentials
+jarsigner -verbose -sigalg SHA256withRSA -digestalg SHA-256 \
+  -keystore /data/code/gt/tgk/AndroidMiniApps/tk2.jks \
+  app/build/outputs/apk/release/app-release.apk \
+  YOUR_ALIAS_NAME
+
+### 4. Verify matches Play Store certificate
+keytool -printcert -jarfile app/build/outputs/apk/release/app-release.apk | grep SHA1
+# Should show: 47:4F:4E:FC:22:8A:94:D8:E1:F2:A5:B0:BF:C7:D2:6A:C4:D3:27:53
+
+### 5. Align if needed
+zipalign -v -p 4 app/build/outputs/apk/release/app-release.apk \
+  app/build/outputs/apk/release/app-release-aligned.apk

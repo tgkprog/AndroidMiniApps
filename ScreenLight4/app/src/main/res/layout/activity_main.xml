@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/topLayout"
+    tools:context=".ScreenLightActivity">
+    
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:onClick="flashTogggle"
+        android:id="@+id/flashControl"
+        android:clickable="true"
+        android:background="@android:color/white"
+        android:drawableLeft="@drawable/ic_flash"
+        android:drawableStart="@drawable/ic_flash"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="12dp"
+        android:scaleX="2.0"
+        android:scaleY="2.0"
+        android:layout_below="@+id/letLightDim"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="80dp" />
+
+    <CheckBox
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:id="@+id/letLightDim"
+        android:clickable="true"
+        android:checked="true"
+        android:onClick="dimToggle"
+        android:enabled="true"
+        android:focusable="false"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="113dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text = "On"
+        android:textSize="25sp"
+        android:id="@+id/txtStatus"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="50dp" />
+    
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="^"
+        android:textSize="76sp"
+        android:textColor="#A0A0A0"
+        android:id="@+id/txtDirection"
+        android:layout_centerInParent="true"
+        android:alpha="0.5" />
+
+</RelativeLayout>
