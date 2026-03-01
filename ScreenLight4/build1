@@ -1,0 +1,124 @@
+#!/bin/bash
+
+BUILD_GRADLE="app/build.gradle"
+
+# Get current version from build.gradle
+CURRENT_VERSION_CODE=$(grep "versionCode" "$BUILD_GRADLE" | awk '{print $2}')
+CURRENT_VERSION_NAME=$(grep "versionName" "$BUILD_GRADLE" | awk '{print $2}' | tr -d '"')
+
+# Parse version name into major.minor.patch
+IFS='.' read -r MAJOR MINOR PATCH <<< "$CURRENT_VERSION_NAME"
+
+# Print usage and current version
+echo "======================================"
+echo "Build Script - ScreenLight4"
+echo "======================================"
+echo "Current Version: $CURRENT_VERSION_NAME (code: $CURRENT_VERSION_CODE)"
+echo ""
+echo "Usage: ./build1 <version_bump> [build_type]"
+echo ""
+echo "  <version_bump>:"
+echo "    1 - Bump patch version (x.y.Z)"
+echo "    2 - Bump minor version (x.Y.0)"
+echo "    3 - Bump major version (X.0.0)"
+echo "    v - Show version and exit"
+echo ""
+echo "  [build_type] (optional):"
+echo "    n - No build (just bump version)"
+echo "    d - Build debug APK"
+echo "    r - Build release APK"
+echo ""
+echo "======================================"
+echo ""
+
+# Check parameters
+if [ $# -lt 1 ]; then
+    echo "Error: Missing version bump parameter"
+    exit 1
+fi
+
+BUMP_TYPE=$1
+BUILD_TYPE=${2:-n}
+
+# Handle version display
+if [ "$BUMP_TYPE" = "v" ]; then
+    exit 0
+fi
+
+# Validate bump type
+if [[ ! "$BUMP_TYPE" =~ ^[123]$ ]]; then
+    echo "Error: Version bump must be 1, 2, or 3"
+    exit 1
+fi
+
+# Validate build type
+if [[ ! "$BUILD_TYPE" =~ ^[ndr]$ ]]; then
+    echo "Error: Build type must be n, d, or r"
+    exit 1
+fi
+
+# Calculate new version
+NEW_MAJOR=$MAJOR
+NEW_MINOR=$MINOR
+NEW_PATCH=$PATCH
+
+case $BUMP_TYPE in
+    1) # Patch
+        NEW_PATCH=$((PATCH + 1))
+        ;;
+    2) # Minor
+        NEW_MINOR=$((MINOR + 1))
+        NEW_PATCH=0
+        ;;
+    3) # Major
+        NEW_MAJOR=$((MAJOR + 1))
+        NEW_MINOR=0
+        NEW_PATCH=0
+        ;;
+esac
+
+NEW_VERSION_NAME="$NEW_MAJOR.$NEW_MINOR"
+if [ $NEW_PATCH -gt 0 ]; then
+    NEW_VERSION_NAME="$NEW_VERSION_NAME.$NEW_PATCH"
+fi
+NEW_VERSION_CODE=$((CURRENT_VERSION_CODE + 1))
+
+echo "Updating version..."
+echo "  From: $CURRENT_VERSION_NAME (code: $CURRENT_VERSION_CODE)"
+echo "  To:   $NEW_VERSION_NAME (code: $NEW_VERSION_CODE)"
+echo ""
+
+# Update build.gradle
+sed -i "s/versionCode $CURRENT_VERSION_CODE/versionCode $NEW_VERSION_CODE/" "$BUILD_GRADLE"
+sed -i "s/versionName \"$CURRENT_VERSION_NAME\"/versionName \"$NEW_VERSION_NAME\"/" "$BUILD_GRADLE"
+
+echo "Version updated successfully!"
+echo ""
+
+# Build if requested
+if [ "$BUILD_TYPE" = "n" ]; then
+    echo "No build requested. Version updated only."
+    exit 0
+fi
+
+if [ "$BUILD_TYPE" = "d" ]; then
+    echo "Building debug APK..."
+    ./gradlew assembleDebug
+elif [ "$BUILD_TYPE" = "r" ]; then
+    echo "Building release APK..."
+    ./gradlew assembleRelease
+fi
+
+if [ $? -eq 0 ]; then
+    echo ""
+    echo "Build completed successfully!"
+    if [ "$BUILD_TYPE" = "d" ]; then
+        echo "APK location: app/build/outputs/apk/debug/app-debug.apk"
+    else
+        echo "APK location: app/build/outputs/apk/release/app-release.apk"
+    fi
+else
+    echo ""
+    echo "Build failed!"
+    exit 1
+fi
