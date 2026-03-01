@@ -23,10 +23,11 @@ echo "    2 - Bump minor version (x.Y.0)"
 echo "    3 - Bump major version (X.0.0)"
 echo "    v - Show version and exit"
 echo ""
-echo "  [build_type] (optional):"
+echo "  [build_type] (optional, default: r):"
 echo "    n - No build (just bump version)"
 echo "    d - Build debug APK"
-echo "    r - Build release APK"
+echo "    r - Build release APK (default)"
+echo "    ver - Show version and exit"
 echo ""
 echo "======================================"
 echo ""
@@ -38,11 +39,50 @@ if [ $# -lt 1 ]; then
 fi
 
 BUMP_TYPE=$1
-BUILD_TYPE=${2:-n}
+BUILD_TYPE=${2:-}
 
-# Handle version display
-if [ "$BUMP_TYPE" = "v" ]; then
-    exit 0
+# Handle version display and ver command
+if [ "$BUMP_TYPE" = "v" ] || [ "$BUMP_TYPE" = "ver" ]; then
+    if [ -z "$BUILD_TYPE" ]; then
+        # Just show version and exit
+        exit 0
+    elif [ "$BUILD_TYPE" = "r" ]; then
+        # Build release without version bump
+        echo "Building release APK without version bump..."
+        ./gradlew assembleRelease
+        if [ $? -eq 0 ]; then
+            echo ""
+            echo "Build completed successfully!"
+            echo "APK location: app/build/outputs/apk/release/app-release.apk"
+        else
+            echo ""
+            echo "Build failed!"
+            exit 1
+        fi
+        exit 0
+    elif [ "$BUILD_TYPE" = "d" ]; then
+        # Build debug without version bump
+        echo "Building debug APK without version bump..."
+        ./gradlew assembleDebug
+        if [ $? -eq 0 ]; then
+            echo ""
+            echo "Build completed successfully!"
+            echo "APK location: app/build/outputs/apk/debug/app-debug.apk"
+        else
+            echo ""
+            echo "Build failed!"
+            exit 1
+        fi
+        exit 0
+    else
+        echo "Error: Invalid build type with ver command. Use r or d."
+        exit 1
+    fi
+fi
+
+# Set default build type to r if not specified
+if [ -z "$BUILD_TYPE" ]; then
+    BUILD_TYPE="r"
 fi
 
 # Validate bump type
